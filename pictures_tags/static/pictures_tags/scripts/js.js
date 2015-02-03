@@ -15,16 +15,11 @@ $(document).ready(function(){
     } else if ($("body").data("title") === "index"){
         $("input#add").click(function(){
             var tag = $("input[type='text']").val();
-            $.ajax({
-                url: "add-tag",
-                type: "get",
-                data: {tag: tag},
-                success: function(data){
-                    if (data.created) {
-                        var clone_tag = $(".tag").last().clone(true, true).insertAfter("div.tag:last");
-                        clone_tag.children("span.tag-name").text(tag);
-                    }
-                },
+            $.get("add-tag", {tag: tag}, function(data){
+                if (data.created) {
+                    var clone_tag = $(".tag").last().clone(true, true).insertAfter("div.tag:last");
+                    clone_tag.children("span.tag-name").text(tag);
+                }
             });
         });
         $(".tag-delete").click(function(){
