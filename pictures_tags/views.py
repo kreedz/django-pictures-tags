@@ -1,21 +1,22 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.conf import settings
-from pictures_tags.models import Picture
+from django.http import JsonResponse
+from pictures_tags.models import Picture, Tag
 
 import os
 
 
 def index(request):
     pictures = Picture.objects.all().order_by('-subPath', 'filename')[:3]
-    context = {'pictures': pictures}
+    tags = Tag.objects.all()
+    context = {'pictures': pictures, 'tags': tags}
     return render(request, 'pictures_tags/index.html', context)
 
 def options(request):
     return render(request, 'pictures_tags/options.html')
 
 def updatedb(request):
-    outtest = ''
     Picture.objects.all().delete()
     denied_dir = 'cache/'
     rootdir = getattr(settings, 'MEDIA_ROOT', None)
@@ -27,7 +28,9 @@ def updatedb(request):
         for filename in filenames:
             ext = os.path.splitext(filename)[1][1:]
             if ext == 'png' or ext == 'jpg' or ext == 'gif':
-                outtest += subRoot + '\n'
-                #outtest += os.path.join(rootdir, subRoot, filename + '\n')
                 Picture.objects.get_or_create(subPath=subRoot, filename=filename)
-    return HttpResponse(outtest)
+    return HttpResponse(True)
+
+def add_tag(request):
+    created = Tag.objects.get_or_create(tag=request.GET.get('tag'))[1]
+    return JsonResponse({'created': created})
