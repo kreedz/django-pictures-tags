@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.conf import settings
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from pictures_tags.models import Picture, Tag
 
 import os
@@ -34,3 +35,13 @@ def updatedb(request):
 def add_tag(request):
     created = Tag.objects.get_or_create(tag=request.GET.get('tag'))[1]
     return JsonResponse({'created': created})
+
+def delete_tag(request):
+    try:
+        deleted = True
+        Tag.objects.get(tag__exact=request.GET.get('tag')).delete()
+    except ObjectDoesNotExist:
+        deleted = False
+    finally:
+        response = {'deleted': deleted}
+    return JsonResponse(response)

@@ -1,0 +1,15 @@
+.picture > img {
+    max-width: 100%;
+}
+
+span.tag-delete {
+    float: right;
+}
+
+.tag-delete {
+    display: none;
+}
+
+.tag:hover > .tag-delete {
+    display: block;
+}
